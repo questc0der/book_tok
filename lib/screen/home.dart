@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../component/page_view.dart';
+import '../screen/book_detail.dart';
+import '../models/book.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -16,14 +19,22 @@ class Home extends StatelessWidget {
   }
 
   PageView _buildVerticalPageView() {
-    return PageView(
+    return PageView.builder(
       controller: _buildPageController(),
       scrollDirection: Axis.vertical,
-      children: <Widget>[
-        Container(color: Colors.green),
-        Container(color: Colors.yellow),
-        Container(color: Colors.red),
-      ],
+      itemCount: books.length,
+      itemBuilder:
+          ((context, index) => GestureDetector(
+            onTap:
+                () => {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BookDetail(index: index),
+                    ),
+                  ),
+                },
+            child: (PageViewCard(book: books[index])),
+          )),
     );
   }
 
