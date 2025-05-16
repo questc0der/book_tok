@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 
 class PageViewCard extends StatelessWidget {
@@ -18,7 +19,12 @@ class PageViewCard extends StatelessWidget {
               children: [
                 Text(
                   book.title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: GoogleFonts.ebGaramond(
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
                 Positioned(
                   top: 10,
@@ -30,7 +36,12 @@ class PageViewCard extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.only(top: 35.0),
-              child: Text(book.content),
+              child: Text(
+                book.content,
+                style: GoogleFonts.ebGaramond(
+                  textStyle: TextStyle(fontSize: 17),
+                ),
+              ),
             ),
           ],
         ),
