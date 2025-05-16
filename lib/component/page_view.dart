@@ -36,12 +36,7 @@ class PageViewCard extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.only(top: 35.0),
-              child: Text(
-                book.content,
-                style: GoogleFonts.ebGaramond(
-                  textStyle: TextStyle(fontSize: 17),
-                ),
-              ),
+              child: Text(book.content, style: TextStyle(fontSize: 16)),
             ),
           ],
         ),
