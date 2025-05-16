@@ -26,11 +26,7 @@ class PageViewCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Icon(Icons.favorite_border_outlined, size: 30),
-                ),
+                Icon(Icons.favorite_border_outlined, size: 30),
               ],
             ),
 
