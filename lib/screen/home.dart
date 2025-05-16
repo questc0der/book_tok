@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import '../component/page_view.dart';
 import '../screen/book_detail.dart';
+import '../screen/post.dart';
+import '../screen/profile.dart';
+import '../screen/explore.dart';
+import '../screen/chat.dart';
 import '../models/book.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class HomeTabs extends StatelessWidget {
+  const HomeTabs({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 0,
       length: 2,
       child: Scaffold(
-        appBar: AppBar(bottom: _buildTabBar()),
-        body: _buildTabBarView(),
+        appBar: AppBar(
+          bottom: TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]),
+        ),
+        body: TabBarView(
+          children: [_buildVerticalPageView(), _buildHorizontalView()],
+        ),
       ),
     );
   }
@@ -49,18 +56,57 @@ class Home extends StatelessWidget {
     );
   }
 
+  PageController _buildPageController() {
+    final controller = PageController(initialPage: 0);
+    return controller;
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int tab = 0;
+
+  final pages = [
+    HomeTabs(),
+    ExplorePage(),
+    PostPage(),
+    ChatPage(),
+    ProfilePage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(index: tab, children: pages),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
   TabBar _buildTabBar() {
     return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
   }
 
-  TabBarView _buildTabBarView() {
-    return TabBarView(
-      children: [_buildVerticalPageView(), _buildHorizontalView()],
+  NavigationBar _buildBottomNavigationBar() {
+    return NavigationBar(
+      selectedIndex: tab,
+      onDestinationSelected: (index) {
+        setState(() {
+          tab = index;
+        });
+      },
+      destinations: [
+        NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+        NavigationDestination(icon: Icon(Icons.explore), label: "Explore"),
+        NavigationDestination(icon: Icon(Icons.add), label: "Post"),
+        NavigationDestination(icon: Icon(Icons.chat), label: "Inbox"),
+        NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+      ],
     );
-  }
-
-  PageController _buildPageController() {
-    final controller = PageController(initialPage: 0);
-    return controller;
   }
 }
