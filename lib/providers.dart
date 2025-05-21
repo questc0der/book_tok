@@ -6,5 +6,5 @@ final name = StateProvider<String>((ref) {
 });
 
 final userInfo = ChangeNotifierProvider<User>((ref) {
-  return User(name: "", email: "", image: null);
+  return User(name: "", email: "", age: "", gender: "", image: null);
 });
