@@ -192,7 +192,6 @@ class SignUp extends ConsumerWidget {
 
             TextButton(
               onPressed: () {
-                ref.read(userInfo).name;
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const Preview()),
                 );
