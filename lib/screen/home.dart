@@ -15,14 +15,16 @@ class HomeTabs extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]),
-        ),
+        appBar: AppBar(bottom: _buildTabBar()),
         body: TabBarView(
           children: [_buildVerticalPageView(), _buildHorizontalView()],
         ),
       ),
     );
+  }
+
+  TabBar _buildTabBar() {
+    return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
   }
 
   PageView _buildVerticalPageView() {
@@ -86,10 +88,6 @@ class _HomeState extends State<Home> {
       body: IndexedStack(index: tab, children: pages),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
-  }
-
-  TabBar _buildTabBar() {
-    return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
   }
 
   NavigationBar _buildBottomNavigationBar() {
