@@ -1,8 +1,8 @@
+import 'package:book_tok/screen/Login/signup.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class Welcome extends StatelessWidget {
+  const Welcome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,11 @@ class LoginPage extends StatelessWidget {
               child: Text("Sign in", style: TextStyle(fontFamily: 'Circular')),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => const SignUp()));
+              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.black, width: 2.0),
                 minimumSize: Size(340, 40),
