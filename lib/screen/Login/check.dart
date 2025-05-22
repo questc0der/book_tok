@@ -9,21 +9,47 @@ class Preview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Column(
-        children: [
-          ClipOval(
-            child: Image.file(
-              File(ref.watch(userInfo).getImage()!.path),
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+      body: Center(
+        child: Card(
+          shape: BeveledRectangleBorder(),
+          child: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ClipOval(
+                  child: Image.file(
+                    File(ref.watch(userInfo).getImage()!.path),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      ref.watch(userInfo).getName(),
+                      style: TextStyle(fontFamily: 'Circular', fontSize: 20),
+                    ),
+                    Text(
+                      ref.watch(userInfo).getEmail(),
+                      style: TextStyle(fontFamily: 'Circular'),
+                    ),
+                    Text(
+                      ref.watch(userInfo).getAge(),
+                      style: TextStyle(fontFamily: 'Circular'),
+                    ),
+                    Text(
+                      ref.watch(userInfo).getGender(),
+                      style: TextStyle(fontFamily: 'Circular'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          Text(ref.watch(userInfo).getName()),
-          Text(ref.watch(userInfo).getEmail()),
-          Text(ref.watch(userInfo).getAge()),
-          Text(ref.watch(userInfo).getGender()),
-        ],
+        ),
       ),
     );
   }
