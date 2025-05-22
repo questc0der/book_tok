@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import './screen/home.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screen/Login/welcome.dart';
 
 void main() {
-  runApp(App());
+  runApp(ProviderScope(child: App()));
 }
 
 class App extends StatelessWidget {
-  App({super.key});
-
-  final controller = PageController(initialPage: 0);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Home());
+    return MaterialApp(debugShowCheckedModeBanner: false, home: Welcome());
   }
 }
