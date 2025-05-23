@@ -36,11 +36,12 @@ class HomeTabs extends StatelessWidget {
           ((context, index) => GestureDetector(
             onTap:
                 () => {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BookDetail(index: index),
-                    ),
-                  ),
+                  _showBottomSheet(context, index),
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => BookDetail(index: index),
+                  //   ),
+                  // ),
                 },
             child: (PageViewCard(book: books[index])),
           )),
@@ -61,6 +62,16 @@ class HomeTabs extends StatelessWidget {
   PageController _buildPageController() {
     final controller = PageController(initialPage: 0);
     return controller;
+  }
+
+  void _showBottomSheet(BuildContext context, index) {
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      context: context,
+      constraints: BoxConstraints(maxWidth: 480, maxHeight: 600),
+
+      builder: (context) => BookDetail(index: index),
+    );
   }
 }
 
