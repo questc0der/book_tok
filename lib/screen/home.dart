@@ -6,6 +6,7 @@ import '../screen/profile.dart';
 import '../screen/explore.dart';
 import '../screen/chat.dart';
 import '../models/book.dart';
+import '../screen/main.dart';
 
 class HomeTabs extends StatelessWidget {
   const HomeTabs({super.key});
@@ -43,7 +44,7 @@ class HomeTabs extends StatelessWidget {
                   //   ),
                   // ),
                 },
-            child: (PageViewCard(book: books[index])),
+            child: MainView(index: index),
           )),
     );
   }
