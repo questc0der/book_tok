@@ -1,8 +1,9 @@
 class Book {
   String title;
   String content;
+  String image;
 
-  Book(this.title, this.content);
+  Book(this.title, this.content, this.image);
 }
 
 List<Book> books = [
@@ -42,6 +43,7 @@ Action Over Inaction: The principle suggests taking action, even if small, to cr
 Break Procrastination: By doing something, you break the cycle of procrastination and create momentum.
 MotEmphasizes letting go of the need to control everything and accepting lifes uncertainties.
 Focus on Process: Encourages focusing on the process rather than the outcome to find fulfillment.""",
+    "assets/pictures/subtle_art.jpg",
   ),
   Book(
     "The 7 Habits of Highly Effective People",
@@ -87,5 +89,6 @@ Learn to say no to less important activities
 Delegate effectively
 Balance short-term and long-term priorities
 """,
+    "assets/pictures/reading.png",
   ),
 ];
