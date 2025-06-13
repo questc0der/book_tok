@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import '../models/book.dart';
 
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
@@ -56,65 +58,79 @@ class _ExploreState extends State<ExploreView> {
   }
 
   Widget _buildViewCard() {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 28.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Image.asset(
-              "assets/pictures/reading.png",
-              width: 130,
-              height: 150,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(width: 20),
-            Column(
-              children: [
-                Text(
-                  "Book Title",
-                  style: TextStyle(
-                    fontFamily: 'Circular',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 28.0),
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.only(bottom: 16.0), // spacing between cards
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Image.asset(
+                    books[index].image,
+                    width: 130,
+                    height: 190,
+                    fit: BoxFit.fill,
                   ),
-                ),
-                Text("Author", style: TextStyle(fontFamily: 'Circular')),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Icon(Icons.favorite_border_rounded),
-                    Text("1.2K"),
-                    SizedBox(width: 7),
-                    Icon(Icons.remove_red_eye_outlined),
-                    Text("1.2K"),
-                  ],
-                ),
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        minimumSize: Size(40, 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  SizedBox(width: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 190,
+                        child: Text(
+                          books[index].title,
+                          style: TextStyle(
+                            fontFamily: 'Circular',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
                       ),
-                      child: Text(
-                        "Read",
-                        style: TextStyle(fontFamily: 'Circular'),
+                      Text("Author", style: TextStyle(fontFamily: 'Circular')),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Icon(Icons.favorite_border_rounded),
+                          Text("1.2K"),
+                          SizedBox(width: 7),
+                          Icon(Icons.remove_red_eye_outlined),
+                          Text("1.2K"),
+                        ],
                       ),
-                    ),
-                    SizedBox(width: 15),
-                    Icon(Icons.bookmark_border_outlined),
-                  ],
-                ),
-              ],
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              minimumSize: Size(40, 20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                              ),
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: Text(
+                              "Read",
+                              style: TextStyle(fontFamily: 'Circular'),
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          Icon(Icons.bookmark_border_outlined),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
