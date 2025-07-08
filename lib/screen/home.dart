@@ -45,7 +45,7 @@ class HomeTabs extends StatelessWidget {
           itemBuilder: (context, index) {
             final book = books[index];
             return GestureDetector(
-              onTap: () => _showBottomSheet(context, index),
+              onTap: () => _showBottomSheet(context, book),
               child: MainView(book: book),
             );
           },
@@ -70,13 +70,13 @@ class HomeTabs extends StatelessWidget {
     return controller;
   }
 
-  void _showBottomSheet(BuildContext context, index) {
+  void _showBottomSheet(BuildContext context, QueryDocumentSnapshot book) {
     showModalBottomSheet<void>(
       isScrollControlled: true,
       context: context,
       constraints: BoxConstraints(maxWidth: 480, maxHeight: 600),
 
-      builder: (context) => BookDetail(index: index),
+      builder: (context) => BookDetail(book: book),
     );
   }
 }
@@ -91,13 +91,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int tab = 0;
 
-  final pages = [
-    HomeTabs(),
-    ExplorePage(),
-    PostPage(),
-    ChatPage(),
-    ProfilePage(),
-  ];
+  final pages = [HomeTabs(), ExplorePage(), Post(), ChatPage(), ProfilePage()];
 
   @override
   Widget build(BuildContext context) {
