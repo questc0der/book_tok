@@ -1,22 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 
 class MainView extends StatelessWidget {
-  final int index;
-  const MainView({super.key, required this.index});
+  final QueryDocumentSnapshot book;
+  const MainView({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
+    final data = book.data() as Map<String, dynamic>;
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(
-            books[index].image,
+          Image.network(
+            data['image'],
             width: double.infinity,
             fit: BoxFit.cover,
             height: double.infinity,
           ),
-          // This Container holds the shadow and text
           Positioned(
             left: 0,
             right: 0,
@@ -24,7 +25,6 @@ class MainView extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                // color: Colors.black,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withAlpha(190),
@@ -39,7 +39,7 @@ class MainView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    books[index].title,
+                    data['title'],
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
