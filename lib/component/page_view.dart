@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 
 class PageViewCard extends StatelessWidget {
-  final Book book;
+  final Map<String, dynamic> book;
   const PageViewCard({super.key, required this.book});
 
   @override
@@ -18,7 +18,7 @@ class PageViewCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  book.title,
+                  book['title'],
                   style: GoogleFonts.ebGaramond(
                     textStyle: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -32,7 +32,7 @@ class PageViewCard extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.only(top: 35.0),
-              child: Text(book.content, style: TextStyle(fontSize: 16)),
+              child: Text(book['content'], style: TextStyle(fontSize: 16)),
             ),
           ],
         ),
