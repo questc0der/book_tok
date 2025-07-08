@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../component/page_view.dart';
 import '../screen/book_detail.dart';
@@ -7,6 +8,7 @@ import '../screen/explore.dart';
 import '../screen/chat.dart';
 import '../models/book.dart';
 import '../screen/main.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class HomeTabs extends StatelessWidget {
   const HomeTabs({super.key});
@@ -28,24 +30,27 @@ class HomeTabs extends StatelessWidget {
     return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
   }
 
-  PageView _buildVerticalPageView() {
-    return PageView.builder(
-      controller: _buildPageController(),
-      scrollDirection: Axis.vertical,
-      itemCount: books.length,
-      itemBuilder:
-          ((context, index) => GestureDetector(
-            onTap:
-                () => {
-                  _showBottomSheet(context, index),
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => BookDetail(index: index),
-                  //   ),
-                  // ),
-                },
-            child: MainView(index: index),
-          )),
+  StreamBuilder _buildVerticalPageView() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('books').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        final books = snapshot.data!.docs;
+        return PageView.builder(
+          controller: _buildPageController(),
+          scrollDirection: Axis.vertical,
+          itemCount: books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+            return GestureDetector(
+              onTap: () => _showBottomSheet(context, index),
+              child: MainView(book: book),
+            );
+          },
+        );
+      },
     );
   }
 
