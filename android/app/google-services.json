@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "59835914200",
+    "project_id": "book-tok-2b9f4",
+    "storage_bucket": "book-tok-2b9f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59835914200:android:da673db9d60c3434c644ad",
+        "android_client_info": {
+          "package_name": "com.example.book_tok"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvnUmELtRMLVJdTrSfkUsru6nM0b6Szgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
