@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../models/book.dart';
 
 class MainView extends StatelessWidget {
   final QueryDocumentSnapshot book;
@@ -9,6 +9,7 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = book.data() as Map<String, dynamic>;
+    final user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       body: Stack(
         children: [
@@ -49,7 +50,16 @@ class MainView extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    "Author",
+                    data['author'],
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Circular',
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    user?.email ?? "Anon",
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
