@@ -1,14 +1,13 @@
+import 'package:book_tok/component/explore.dart';
+import 'package:book_tok/screen/book_detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../component/page_view.dart';
-import '../screen/book_detail.dart';
+import 'package:go_router/go_router.dart';
+// import '../screen/book_detail.dart';
 import '../screen/post.dart';
 import '../screen/profile.dart';
-import '../screen/explore.dart';
 import '../screen/chat.dart';
-import '../models/book.dart';
 import '../screen/main.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class HomeTabs extends StatelessWidget {
   const HomeTabs({super.key});
@@ -45,7 +44,11 @@ class HomeTabs extends StatelessWidget {
           itemBuilder: (context, index) {
             final book = books[index];
             return GestureDetector(
-              onTap: () => _showBottomSheet(context, book),
+              onTap:
+                  () => {
+                    print("Tapped on book ${book.id}"),
+                    context.go('/detail', extra: book),
+                  },
               child: MainView(book: book),
             );
           },
@@ -54,14 +57,24 @@ class HomeTabs extends StatelessWidget {
     );
   }
 
-  PageView _buildHorizontalView() {
-    return PageView(
-      controller: _buildPageController(),
-      children: <Widget>[
-        Container(color: Colors.green),
-        Container(color: Colors.yellow),
-        Container(color: Colors.red),
-      ],
+  Widget _buildHorizontalView() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('books').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        final books = snapshot.data!.docs;
+
+        return PageView.builder(
+          controller: _buildPageController(),
+          itemCount: books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+            return BookDetail(book: book);
+          },
+        );
+      },
     );
   }
 
@@ -70,15 +83,15 @@ class HomeTabs extends StatelessWidget {
     return controller;
   }
 
-  void _showBottomSheet(BuildContext context, QueryDocumentSnapshot book) {
-    showModalBottomSheet<void>(
-      isScrollControlled: true,
-      context: context,
-      constraints: BoxConstraints(maxWidth: 480, maxHeight: 600),
+  // void _showBottomSheet(BuildContext context, QueryDocumentSnapshot book) {
+  //   showModalBottomSheet<void>(
+  //     isScrollControlled: true,
+  //     context: context,
+  //     constraints: BoxConstraints(maxWidth: 480, maxHeight: 600),
 
-      builder: (context) => BookDetail(book: book),
-    );
-  }
+  //     builder: (context) => BookDetail(book: book),
+  //   );
+  // }
 }
 
 class Home extends StatefulWidget {
@@ -91,7 +104,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int tab = 0;
 
-  final pages = [HomeTabs(), ExplorePage(), Post(), ChatPage(), ProfilePage()];
+  final pages = [HomeTabs(), ExploreView(), Post(), ChatPage(), Profile()];
 
   @override
   Widget build(BuildContext context) {
