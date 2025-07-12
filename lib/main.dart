@@ -1,3 +1,5 @@
+import 'package:book_tok/screen/book_detail.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,8 +18,20 @@ void main() async {
 
 final GoRouter _router = GoRouter(
   redirect: (BuildContext context, GoRouterState state) {
-    return FirebaseAuth.instance.currentUser != null ? '/home' : '/login';
+    final loggedIn = FirebaseAuth.instance.currentUser != null;
+    final loggingIn = state.matchedLocation == '/login';
+    final goingToDetail = state.matchedLocation == '/detail';
+
+    if (!loggedIn && !loggingIn) {
+      return '/login';
+    }
+    if (loggedIn && loggingIn) {
+      return '/home';
+    }
+    // Allow navigation to /detail when logged in
+    return null;
   },
+
   routes: <RouteBase>[
     GoRoute(
       path: '/',
@@ -37,7 +51,18 @@ final GoRouter _router = GoRouter(
         return SignUp();
       },
     ),
+    GoRoute(
+      path: '/detail',
+      builder: (BuildContext context, GoRouterState state) {
+        print(">>> In /detail route");
+        final book = state.extra as QueryDocumentSnapshot;
+        return BookDetail(book: book);
+      },
+    ),
   ],
+  errorBuilder:
+      (context, state) =>
+          Scaffold(body: Center(child: Text('Error: ${state.error}'))),
 );
 
 class App extends StatelessWidget {
