@@ -16,6 +16,7 @@ class _PostState extends ConsumerState<Post> {
   final _contentController = TextEditingController();
   final _authorController = TextEditingController();
   final _imageLinkController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -59,16 +60,41 @@ class _PostState extends ConsumerState<Post> {
             ),
             ElevatedButton(
               onPressed: () async {
+                setState(() => isLoading = true);
                 final user = FirebaseAuth.instance.currentUser;
-                await postDao.post(
-                  _titleController.text,
-                  _contentController.text,
-                  _authorController.text,
-                  _imageLinkController.text,
-                  user!.uid,
-                );
+                try {
+                  await postDao.post(
+                    _titleController.text,
+                    _contentController.text,
+                    _authorController.text,
+                    _imageLinkController.text,
+                    user!.uid,
+                    user.email ?? "Anon",
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Post successfully uploaded!')),
+                  );
+                  _titleController.clear();
+                  _contentController.clear();
+                  _authorController.clear();
+                  _imageLinkController.clear();
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Failed to post: $e')));
+                } finally {
+                  setState(() => isLoading = false);
+                }
               },
-              child: Text("Post"),
+              child:
+                  isLoading
+                      ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(),
+                      )
+                      : Text("Post"),
             ),
           ],
         ),
