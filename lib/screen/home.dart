@@ -17,7 +17,7 @@ class HomeTabs extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(bottom: _buildTabBar()),
+        // appBar: AppBar(bottom: _buildTabBar()),
         body: TabBarView(
           children: [_buildVerticalPageView(), _buildHorizontalView()],
         ),
@@ -43,14 +43,15 @@ class HomeTabs extends StatelessWidget {
           itemCount: books.length,
           itemBuilder: (context, index) {
             final book = books[index];
-            return GestureDetector(
-              onTap:
-                  () => {
-                    print("Tapped on book ${book.id}"),
-                    context.go('/detail', extra: book),
-                  },
-              child: MainView(book: book),
-            );
+            return MainView(book: book);
+
+            // return GestureDetector(
+            //   onTap:
+            //       () => {
+            //         print("Tapped on book ${book.id}"),
+            //         context.go('/detail', extra: book),
+            //       },
+            // );
           },
         );
       },
