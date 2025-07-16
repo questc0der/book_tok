@@ -18,16 +18,14 @@ class HomeTabs extends StatelessWidget {
       length: 2,
       child: Scaffold(
         // appBar: AppBar(bottom: _buildTabBar()),
-        body: TabBarView(
-          children: [_buildVerticalPageView(), _buildHorizontalView()],
-        ),
+        body: TabBarView(children: [_buildVerticalPageView()]),
       ),
     );
   }
 
-  TabBar _buildTabBar() {
-    return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
-  }
+  // TabBar _buildTabBar() {
+  //   return TabBar(tabs: [Tab(text: "For You"), Tab(text: "Following")]);
+  // }
 
   StreamBuilder _buildVerticalPageView() {
     return StreamBuilder<QuerySnapshot>(
@@ -44,40 +42,32 @@ class HomeTabs extends StatelessWidget {
           itemBuilder: (context, index) {
             final book = books[index];
             return MainView(book: book);
-
-            // return GestureDetector(
-            //   onTap:
-            //       () => {
-            //         print("Tapped on book ${book.id}"),
-            //         context.go('/detail', extra: book),
-            //       },
-            // );
           },
         );
       },
     );
   }
 
-  Widget _buildHorizontalView() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('books').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-        final books = snapshot.data!.docs;
+  // Widget _buildHorizontalView() {
+  //   return StreamBuilder<QuerySnapshot>(
+  //     stream: FirebaseFirestore.instance.collection('books').snapshots(),
+  //     builder: (context, snapshot) {
+  //       if (!snapshot.hasData) {
+  //         return Center(child: CircularProgressIndicator());
+  //       }
+  //       final books = snapshot.data!.docs;
 
-        return PageView.builder(
-          controller: _buildPageController(),
-          itemCount: books.length,
-          itemBuilder: (context, index) {
-            final book = books[index];
-            return BookDetail(book: book);
-          },
-        );
-      },
-    );
-  }
+  //       return PageView.builder(
+  //         controller: _buildPageController(),
+  //         itemCount: books.length,
+  //         itemBuilder: (context, index) {
+  //           final book = books[index];
+  //           return BookDetail(book: book);
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   PageController _buildPageController() {
     final controller = PageController(initialPage: 0);
