@@ -81,7 +81,7 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
               child: Scaffold(
                 appBar: AppBar(bottom: _buildTabBar()),
                 body: TabBarView(
-                  children: <Widget>[_postsView(), _likesView()],
+                  children: <Widget>[_postsView(), _bookMarkView()],
                 ),
               ),
             ),
@@ -98,7 +98,7 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
 
-  PageView _likesView() {
+  PageView _bookMarkView() {
     return PageView(
       controller: _buildPageController(),
       children: <Widget>[Container(color: Colors.red)],
@@ -111,7 +111,7 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
   }
 
   TabBar _buildTabBar() {
-    return TabBar(tabs: [Tab(text: 'Posts'), Tab(text: 'Likes')]);
+    return TabBar(tabs: [Tab(text: 'Posts'), Tab(text: 'BookMark')]);
   }
 
   Future<List<Map<String, dynamic>>> fetchPostedBooks() async {
