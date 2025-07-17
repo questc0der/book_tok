@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainView extends StatelessWidget {
@@ -8,7 +9,6 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = book.data() as Map<String, dynamic>;
-
     // Split content into pages
     List<String> paginateContent(String content, int charsPerPage) {
       List<String> pages = [];
@@ -42,6 +42,63 @@ class MainView extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       fit: BoxFit.cover,
                       height: MediaQuery.of(context).size.height / 2.2,
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: StreamBuilder<DocumentSnapshot>(
+                        stream:
+                            FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .collection("bookmarks")
+                                .doc(book.id)
+                                .snapshots(),
+                        builder: (context, snapshot) {
+                          bool isBookMarked = snapshot.data?.exists ?? false;
+
+                          return IconButton(
+                            icon: Icon(
+                              Icons.bookmark_rounded,
+                              color: isBookMarked ? Colors.red : Colors.grey,
+                            ),
+                            onPressed: () async {
+                              final user = FirebaseAuth.instance.currentUser;
+                              if (user == null) {
+                                print("Error: No user is currently logged in.");
+                                // Maybe show a SnackBar or navigate to login screen
+                                return; // Stop execution if no user
+                              }
+
+                              final userId = user.uid;
+                              final bookMarkDocRef = FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(userId) // Using the safe userId
+                                  .collection("bookmarks")
+                                  .doc(book.id);
+
+                              if (isBookMarked) {
+                                await bookMarkDocRef.delete();
+                              } else {
+                                print(
+                                  "Current user ID being used for bookmark: $userId",
+                                ); // Detailed print
+                                print("Bookmarking book ID: ${book.id}");
+
+                                await bookMarkDocRef.set({
+                                  "title": book['title'],
+                                  "author": book['author'],
+                                  "image": book['image'],
+                                  "bookmarkedAt": FieldValue.serverTimestamp(),
+                                });
+                                print(
+                                  "Bookmark added successfully for user $userId to book ${book.id}",
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
                     ),
                     Positioned(
                       left: 0,
@@ -105,7 +162,8 @@ class MainView extends StatelessWidget {
                           Column(
                             children: [
                               Text(
-                                "User Name",
+                                data["postedBy"],
+                                textAlign: TextAlign.left,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               ElevatedButton(
@@ -127,12 +185,59 @@ class MainView extends StatelessWidget {
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.favorite),
-                            color: Colors.grey,
+                          StreamBuilder<DocumentSnapshot>(
+                            stream:
+                                FirebaseFirestore.instance
+                                    .collection("books")
+                                    .doc(book.id)
+                                    .collection("likes")
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .snapshots(),
+                            builder: (context, snapshot) {
+                              final isLiked = snapshot.data?.exists ?? false;
+
+                              return IconButton(
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: isLiked ? Colors.red : Colors.grey,
+                                ),
+                                onPressed: () async {
+                                  final likeDocRef = FirebaseFirestore.instance
+                                      .collection("books")
+                                      .doc(book.id)
+                                      .collection("likes")
+                                      .doc(
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                      );
+
+                                  if (isLiked) {
+                                    await likeDocRef.delete();
+                                  } else {
+                                    await likeDocRef.set({
+                                      "likedAt": FieldValue.serverTimestamp(),
+                                    });
+                                  }
+                                },
+                              );
+                            },
                           ),
-                          Text("0"),
+                          StreamBuilder<QuerySnapshot>(
+                            stream:
+                                FirebaseFirestore.instance
+                                    .collection('books')
+                                    .doc(book.id)
+                                    .collection("likes")
+                                    .snapshots(),
+                            builder: (context, likeSnapshot) {
+                              if (likeSnapshot.hasData) {
+                                return Text(
+                                  "${likeSnapshot.data!.docs.length}",
+                                );
+                              } else {
+                                return Text("0");
+                              }
+                            },
+                          ),
                           IconButton(
                             onPressed: () {},
                             icon: Icon(Icons.mode_comment),
@@ -161,14 +266,12 @@ class MainView extends StatelessWidget {
             // Page 2...N: reading pages only
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: SingleChildScrollView(
-                child: Text(
-                  contentPages[index - 1],
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.5,
-                    fontFamily: 'Circular',
-                  ),
+              child: Text(
+                contentPages[index - 1],
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  fontFamily: 'Circular',
                 ),
               ),
             );
