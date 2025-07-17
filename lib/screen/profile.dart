@@ -94,14 +94,14 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
   PageView _postsView() {
     return PageView(
       controller: _buildPageController(),
-      children: <Widget>[_buildCardGrid()],
+      children: <Widget>[_buildCardGridForPosts()],
     );
   }
 
   PageView _bookMarkView() {
     return PageView(
       controller: _buildPageController(),
-      children: <Widget>[Container(color: Colors.red)],
+      children: <Widget>[_buildCardGridForBookMark()],
     );
   }
 
@@ -125,7 +125,7 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
-  Widget _buildCardGrid() {
+  Widget _buildCardGridForPosts() {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: fetchPostedBooks(),
       builder: (context, snapshot) {
@@ -147,6 +147,52 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
           ),
           itemBuilder: (context, index) {
             final bookData = books[index];
+            return Column(
+              children: [
+                Expanded(
+                  child: Card(
+                    clipBehavior: Clip.hardEdge,
+                    child: Image.network(bookData['image'], fit: BoxFit.fill),
+                  ),
+                ),
+                Text(bookData['title']),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchBookMarkedBooks() {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("bookmarks")
+        .snapshots();
+  }
+
+  Widget _buildCardGridForBookMark() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: fetchBookMarkedBooks(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("Error ${snapshot.error}"));
+        }
+        final books = snapshot.data!.docs;
+        return GridView.builder(
+          itemCount: books.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+            childAspectRatio: 1,
+          ),
+          itemBuilder: (context, index) {
+            final bookData = books[index].data() as Map<String, dynamic>;
             return Column(
               children: [
                 Expanded(
