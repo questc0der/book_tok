@@ -11,6 +11,7 @@ class BookDao extends ChangeNotifier {
     String imageLink,
     String uid,
     String email,
+    String postedBy,
   ) async {
     try {
       DocumentReference docRef = await db.collection('books').add({
@@ -20,6 +21,7 @@ class BookDao extends ChangeNotifier {
         'image': imageLink,
         'uid': uid,
         'email': email,
+        'postedBy': postedBy,
       });
       return docRef.id;
     } catch (e) {
