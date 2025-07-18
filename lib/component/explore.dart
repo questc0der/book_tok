@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExploreView extends ConsumerStatefulWidget {
@@ -17,12 +14,26 @@ class _ExploreState extends ConsumerState<ExploreView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Explore")),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          _buildSlideView(),
-          SizedBox(height: 350, child: _buildViewCard()),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            _buildSlideView(),
+            SizedBox(height: 350, child: _buildViewCard()),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  "Trending Posts",
+                  style: TextStyle(fontFamily: 'Circular', fontSize: 16),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            _buildCollectionsView(),
+          ],
+        ),
       ),
     );
   }
@@ -191,6 +202,81 @@ class _ExploreState extends ConsumerState<ExploreView> {
           );
         },
       ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchTrendingBooks() async {
+    final db = FirebaseFirestore.instance;
+    final booksSnapshot = await db.collection("books").get();
+
+    List<Map<String, dynamic>> trendingBooks = [];
+
+    for (var bookDoc in booksSnapshot.docs) {
+      final bookId = bookDoc.id;
+      final bookData = bookDoc.data();
+
+      final likesSnapshot =
+          await db.collection("books").doc(bookId).collection("likes").get();
+
+      final likesCount = likesSnapshot.docs.length;
+
+      trendingBooks.add({
+        'bookId': bookId,
+        'bookData': bookData,
+        'likesCount': likesCount,
+      });
+    }
+    trendingBooks.sort((a, b) => b['likesCount'].compareTo(a['likesCount']));
+    return trendingBooks;
+  }
+
+  Widget _buildCollectionsView() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchTrendingBooks(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("$snapshot.error"));
+        }
+        final trending = snapshot.data!;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: trending.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 20,
+            childAspectRatio: 1,
+          ),
+          itemBuilder: (context, index) {
+            final trend = trending[index];
+            final bookData = trend['bookData'] as Map<String, dynamic>;
+            return Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+
+                    child: Image.network(
+                      "${bookData['image']}",
+                      width: 200,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Text(
+                  "${bookData['title']}",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
