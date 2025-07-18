@@ -166,17 +166,78 @@ class MainView extends StatelessWidget {
                                 textAlign: TextAlign.left,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(70, 30),
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black,
-                                ),
-                                child: Text(
-                                  "Follow",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream:
+                                    FirebaseFirestore.instance
+                                        .collection("users")
+                                        .doc(
+                                          FirebaseAuth
+                                              .instance
+                                              .currentUser!
+                                              .uid,
+                                        )
+                                        .collection("following")
+                                        .doc(data['uid'])
+                                        .snapshots(),
+                                builder: (context, snapshot) {
+                                  final isFollowing =
+                                      snapshot.data?.exists ?? false;
+
+                                  return ElevatedButton(
+                                    onPressed: () async {
+                                      final currentUserUid =
+                                          FirebaseAuth
+                                              .instance
+                                              .currentUser!
+                                              .uid;
+                                      final creatorUid = data['uid'];
+
+                                      final followingRef = FirebaseFirestore
+                                          .instance
+                                          .collection("users")
+                                          .doc(currentUserUid)
+                                          .collection("following")
+                                          .doc(creatorUid);
+
+                                      final followersRef = FirebaseFirestore
+                                          .instance
+                                          .collection("users")
+                                          .doc(creatorUid)
+                                          .collection("followers")
+                                          .doc(currentUserUid);
+
+                                      final docSnapshot =
+                                          await followingRef.get();
+
+                                      if (docSnapshot.exists) {
+                                        await followingRef.delete();
+                                        await followersRef.delete();
+                                        print("Unfollowed $creatorUid");
+                                      } else {
+                                        await followingRef.set({
+                                          "followedAt":
+                                              FieldValue.serverTimestamp(),
+                                        });
+                                        await followersRef.set({
+                                          "followedAt":
+                                              FieldValue.serverTimestamp(),
+                                        });
+                                        print("Followed $creatorUid");
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: Size(70, 30),
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Colors.black,
+                                    ),
+                                    child: Text(
+                                      isFollowing ? "Following" : "Follow",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
