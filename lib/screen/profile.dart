@@ -58,19 +58,65 @@ class _ProfilePage extends State<Profile> with SingleTickerProviderStateMixin {
               Column(
                 children: [
                   Text("Followers"),
-                  Text("100", style: TextStyle(fontWeight: FontWeight.bold)),
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection("followers")
+                            .snapshots(),
+                    builder: (context, snapshot) {
+                      final followers = snapshot.data?.size;
+
+                      return Text(
+                        "$followers",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
                 ],
               ),
               Column(
                 children: [
                   Text("Following"),
-                  Text("100", style: TextStyle(fontWeight: FontWeight.bold)),
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection("following")
+                            .snapshots(),
+                    builder: (context, snapshot) {
+                      final following = snapshot.data?.size;
+
+                      return Text(
+                        "$following",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
                 ],
               ),
               Column(
                 children: [
                   Text("Posts"),
-                  Text("100", style: TextStyle(fontWeight: FontWeight.bold)),
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        FirebaseFirestore.instance
+                            .collection("books")
+                            .where(
+                              "uid",
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                            )
+                            .snapshots(),
+                    builder: (context, snapshot) {
+                      final posts = snapshot.data?.size;
+                      return Text(
+                        "$posts",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
                 ],
               ),
             ],
