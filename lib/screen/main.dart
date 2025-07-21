@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:book_tok/component/comment.dart';
 import 'package:flutter/material.dart';
 
 class MainView extends StatelessWidget {
@@ -300,7 +301,18 @@ class MainView extends StatelessWidget {
                             },
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    height: 600,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Comment(bookId: book.id),
+                                  );
+                                },
+                              );
+                            },
                             icon: Icon(Icons.mode_comment),
                             color: Colors.grey,
                           ),
