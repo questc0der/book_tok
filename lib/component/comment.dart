@@ -21,14 +21,19 @@ class _CommentSection extends ConsumerState<Comment> {
           child: StreamBuilder(
             stream: _fetchComments(),
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(child: Text("No comments yet"));
+              }
               final comments = snapshot.data!.docs;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    comments.map((doc) {
-                      final data = doc.data();
-                      return Text("${data['authorName']} ${data['comment']}");
-                    }).toList(),
+              return ListView.builder(
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  final data = comments[index].data();
+                  return _buildCommentView(data['authorName'], data['comment']);
+                },
               );
             },
           ),
@@ -53,13 +58,14 @@ class _CommentSection extends ConsumerState<Comment> {
                   onPressed: () async {
                     final commentText = _commentController.text.trim();
                     final user = FirebaseAuth.instance.currentUser;
+
                     final userDoc =
                         await FirebaseFirestore.instance
-                            .collection("user")
+                            .collection("users")
                             .doc(user!.uid)
                             .get();
                     final userData = userDoc.data();
-                    final userName = userData!['name'];
+                    final userName = userData?['name'];
                     if (commentText.isEmpty) return;
 
                     await FirebaseFirestore.instance
@@ -90,5 +96,25 @@ class _CommentSection extends ConsumerState<Comment> {
         .doc(widget.bookId)
         .collection("comments")
         .snapshots();
+  }
+
+  Widget _buildCommentView(String authorName, String comment) {
+    return Padding(
+      padding: const EdgeInsets.all(18.0),
+      child: Row(
+        children: [
+          CircleAvatar(radius: 20),
+          SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(authorName, style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              Text(comment),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
