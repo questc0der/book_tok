@@ -1,5 +1,3 @@
-import 'package:book_tok/screen/book_detail.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +7,7 @@ import 'screen/home.dart';
 import "./screen/Login/signup.dart";
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,52 +16,29 @@ void main() async {
 }
 
 final GoRouter _router = GoRouter(
+  refreshListenable: AuthNotifier(),
   redirect: (BuildContext context, GoRouterState state) {
     final loggedIn = FirebaseAuth.instance.currentUser != null;
-    final loggingIn = state.matchedLocation == '/login';
-    final goingToDetail = state.matchedLocation == '/detail';
 
-    if (!loggedIn && !loggingIn) {
-      return '/login';
-    }
-    if (loggedIn && loggingIn) {
-      return '/home';
-    }
-    // Allow navigation to /detail when logged in
+    // Treat both "/" (Welcome) and "/login" the same:
+    final goingToAuth =
+        state.matchedLocation == '/' || state.matchedLocation == '/login';
+
+    // 1) If not logged in and not already heading to auth, send to "/"
+    if (!loggedIn && !goingToAuth) return '/';
+
+    // 2) If logged in and heading to auth ("/" or "/login"), send to "/home"
+    if (loggedIn && goingToAuth) return '/home';
+
+    // 3) Otherwise no redirect
     return null;
   },
-
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return const Welcome();
-      },
-    ),
-    GoRoute(
-      path: '/home',
-      builder: (BuildContext context, GoRouterState state) {
-        return Home();
-      },
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (BuildContext context, GoRouterState state) {
-        return SignUp();
-      },
-    ),
-    GoRoute(
-      path: '/detail',
-      builder: (BuildContext context, GoRouterState state) {
-        print(">>> In /detail route");
-        final book = state.extra as QueryDocumentSnapshot;
-        return BookDetail(book: book);
-      },
-    ),
+  routes: [
+    GoRoute(path: '/', builder: (context, state) => const Welcome()),
+    GoRoute(path: '/login', builder: (context, state) => const SignUp()),
+    GoRoute(path: '/home', builder: (context, state) => Home()),
+    // ...
   ],
-  errorBuilder:
-      (context, state) =>
-          Scaffold(body: Center(child: Text('Error: ${state.error}'))),
 );
 
 class App extends StatelessWidget {
